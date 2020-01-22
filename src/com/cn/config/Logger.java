@@ -8,7 +8,7 @@ public class Logger extends java.util.logging.Logger {
 
 
     public Integer getLineNum() {
-        return this.lineNum;
+        return this.lineNum == null ? 0 : this.lineNum;
     }
 
     protected Logger(String name, String resourceBundleName) {
