@@ -1,6 +1,7 @@
 # 日常学习工作经常用到的java工具类
 ----
     1、所用到的环境如下：
+```xml
         <?xml version="1.0" encoding="UTF-8"?>
         <classpath>
             <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
@@ -16,3 +17,4 @@
             <classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
             <classpathentry kind="output" path="bin"/>
         </classpath>
+```
