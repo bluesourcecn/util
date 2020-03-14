@@ -230,6 +230,7 @@ public class HttpClientUtil {
                 sb.append(line + "\n");
                 line = br.readLine();
             }
+            br.close();
             return sb.toString();
         }
         return "";
