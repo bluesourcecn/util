@@ -15,6 +15,7 @@
             <classpathentry kind="lib" path="lib/httpclient-4.5.5.jar"/>
             <classpathentry kind="lib" path="lib/httpcore-4.4.9.jar"/>
             <classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
+            <classpathentry kind="lib" path="lib/hutool-all-5.8.6.jar"/>
             <classpathentry kind="output" path="bin"/>
         </classpath>
 ```
