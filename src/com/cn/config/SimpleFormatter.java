@@ -26,6 +26,8 @@ public class SimpleFormatter extends Formatter {
 	private static final AnsiColor COLOR_TIME = AnsiColor.WHITE;
 
 	private static boolean LINENUM = false;
+	
+	private static boolean METHODNAME = false;
 
 	/**
 	 * 控制台打印行数的颜色代码
@@ -56,6 +58,7 @@ public class SimpleFormatter extends Formatter {
 	static {
 		Props props = new Props("logging.properties");
 		LINENUM = props.getBool("com.cn.config.ConsoleHandler.formatter.linenum", false);
+		METHODNAME = props.getBool("com.cn.config.ConsoleHandler.formatter.method", false);
 	}
 
 	@Override
@@ -71,10 +74,12 @@ public class SimpleFormatter extends Formatter {
 		logBuilder.append(" ");
 		// 包名以及类名
 		logBuilder.append(AnsiEncoder.encode(COLOR_CLASSNAME, record.getSourceClassName()));
-		// 分割
-		logBuilder.append(" ");
-		// 方法名
-		logBuilder.append(AnsiEncoder.encode(COLOR_CLASSNAME, record.getSourceMethodName()));
+		if (METHODNAME) {
+			// 分割
+			logBuilder.append(" ");
+			// 方法名
+			logBuilder.append(AnsiEncoder.encode(COLOR_CLASSNAME, record.getSourceMethodName()));
+		}
 		if (LINENUM) {
 			// 分割
 			logBuilder.append("-");
