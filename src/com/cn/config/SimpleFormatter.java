@@ -55,7 +55,7 @@ public class SimpleFormatter extends Formatter {
 
 	static {
 		Props props = new Props("logging.properties");
-		LINENUM = props.getBool("com.cn.toolbox.config.log.ConsoleHandler.formatter.linenum", false);
+		LINENUM = props.getBool("com.cn.config.ConsoleHandler.formatter.linenum", false);
 	}
 
 	@Override
