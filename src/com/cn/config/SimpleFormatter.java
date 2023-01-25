@@ -25,9 +25,20 @@ public class SimpleFormatter extends Formatter {
 	 */
 	private static final AnsiColor COLOR_TIME = AnsiColor.WHITE;
 
+	/**
+	 * 是否打印行号
+	 */
 	private static boolean LINENUM = false;
 	
+	/**
+	 * 是否显示方法名
+	 */
 	private static boolean METHODNAME = false;
+	
+	/**
+	 * 是否启用ansi
+	 */
+	private static boolean ANSIENABLE = false;
 
 	/**
 	 * 控制台打印行数的颜色代码
@@ -57,15 +68,16 @@ public class SimpleFormatter extends Formatter {
 
 	static {
 		Props props = new Props("logging.properties");
-		LINENUM = props.getBool("com.cn.config.ConsoleHandler.formatter.linenum", false);
-		METHODNAME = props.getBool("com.cn.config.ConsoleHandler.formatter.method", false);
+		LINENUM = props.getBool("com.cn.toolbox.config.log.ConsoleHandler.formatter.linenum", false);
+		METHODNAME = props.getBool("com.cn.toolbox.config.log.ConsoleHandler.formatter.method", false);
+		ANSIENABLE = props.getBool("com.cn.toolbox.config.log.ConsoleHandler.ansi.enable", false);
 	}
 
 	@Override
 	public String format(LogRecord record) {
 		StringBuilder logBuilder = new StringBuilder();
 		// 时间
-		logBuilder.append(AnsiEncoder.encode(COLOR_TIME, DatePattern.NORM_DATETIME_MS_FORMAT.format(new Date())));
+		logBuilder.append(ansiHandler(COLOR_TIME, DatePattern.NORM_DATETIME_MS_FORMAT.format(new Date())));
 		// 分割
 		logBuilder.append(" ");
 		// 日志级别
@@ -73,12 +85,12 @@ public class SimpleFormatter extends Formatter {
 		// 分割
 		logBuilder.append(" ");
 		// 包名以及类名
-		logBuilder.append(AnsiEncoder.encode(COLOR_CLASSNAME, record.getSourceClassName()));
+		logBuilder.append(ansiHandler(COLOR_CLASSNAME, record.getSourceClassName()));
 		if (METHODNAME) {
 			// 分割
 			logBuilder.append(" ");
 			// 方法名
-			logBuilder.append(AnsiEncoder.encode(COLOR_CLASSNAME, record.getSourceMethodName()));
+			logBuilder.append(ansiHandler(COLOR_CLASSNAME, record.getSourceMethodName()));
 		}
 		if (LINENUM) {
 			// 分割
@@ -89,7 +101,7 @@ public class SimpleFormatter extends Formatter {
 		// 分割
 		logBuilder.append(" : ");
 		// 日志内容
-		logBuilder.append(AnsiEncoder.encode(COLOR_NONE, record.getMessage()));
+		logBuilder.append(ansiHandler(COLOR_NONE, record.getMessage()));
 		// 换行
 		logBuilder.append(FileUtil.getLineSeparator());
 		return logBuilder.toString();
@@ -104,15 +116,15 @@ public class SimpleFormatter extends Formatter {
 	private String transLevel(Object level) {
 		switch (level.toString()) {
 		case "INFO":
-			return AnsiEncoder.encode(colorFactory.apply(Level.INFO), Level.INFO);
+			return ANSIENABLE ? AnsiEncoder.encode(colorFactory.apply(Level.INFO), Level.INFO) : Level.INFO.name();
 		case "FINE":
-			return AnsiEncoder.encode(colorFactory.apply(Level.DEBUG), Level.DEBUG);
+			return ANSIENABLE ? AnsiEncoder.encode(colorFactory.apply(Level.DEBUG), Level.DEBUG) : Level.DEBUG.name();
 		case "WARNING":
-			return AnsiEncoder.encode(colorFactory.apply(Level.WARN), Level.WARN);
+			return ANSIENABLE ? AnsiEncoder.encode(colorFactory.apply(Level.WARN), Level.WARN) : Level.WARN.name();
 		case "SEVERE":
-			return AnsiEncoder.encode(colorFactory.apply(Level.ERROR), Level.ERROR);
+			return ANSIENABLE ? AnsiEncoder.encode(colorFactory.apply(Level.ERROR), Level.ERROR) : Level.ERROR.name();
 		case "FINEST":
-			return AnsiEncoder.encode(colorFactory.apply(Level.TRACE), Level.TRACE);
+			return ANSIENABLE ? AnsiEncoder.encode(colorFactory.apply(Level.TRACE), Level.TRACE) : Level.TRACE.name();
 		default:
 			throw new RuntimeException(StrUtil.format("unknown level {}", level));
 		}
@@ -128,9 +140,23 @@ public class SimpleFormatter extends Formatter {
 		StackTraceElement[] stackTrace = ThreadUtil.getStackTrace();
 		for (StackTraceElement stackTraceElement : stackTrace) {
 			if (StrUtil.equals(className, stackTraceElement.getClassName())) {
-				return AnsiEncoder.encode(COLOR_LINENUM, StrUtil.format("[{}]", stackTraceElement.getLineNumber()));
+				return ansiHandler(COLOR_LINENUM, StrUtil.format("[{}]", stackTraceElement.getLineNumber()));
 			}
 		}
-		return AnsiEncoder.encode(COLOR_LINENUM, "[unknown]");
+		return ansiHandler(COLOR_LINENUM, "[unknown]");
+	}
+	
+	/**
+	 * ansi处理
+	 * 
+	 * @param color {@link AnsiColor}
+	 * @param log  日志
+	 * @return ansi处理后的日志
+	 */
+	private String ansiHandler(AnsiColor color, String log) {
+		if (ANSIENABLE) {
+			return AnsiEncoder.encode(color, log);
+		}
+		return log;
 	}
 }
